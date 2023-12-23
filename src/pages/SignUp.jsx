@@ -4,6 +4,11 @@ import { IoMdEyeOff } from "react-icons/io";
 import { IoEye } from "react-icons/io5";
 import { Link } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import {getAuth, createUserWithEmailAndPassword, updateProfile} from "firebase/auth";
+import { db } from '../firebase';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import {toast} from 'react-toastify'
 
 
 export default function SignUp() {
@@ -14,12 +19,42 @@ export default function SignUp() {
     password: "",
   });
   const {name,email, password} = formData;
+  const navigate = useNavigate();
   function onChange(e){
     console.log(e.target.value);
     setFormData((prevState)=>({
       ...prevState,
       [e.target.id]: e.target.value,
     }))
+  }
+
+  async function onSubmit(e){
+    e.preventDefault();
+
+
+    try {
+      const auth = getAuth();
+      const userCredentials = await createUserWithEmailAndPassword(auth,email,password);
+      updateProfile(auth.currentUser,{
+        displayName: name
+
+      })
+      const user = userCredentials.user;
+      const formDataCopy  = {...formData}
+      delete formDataCopy.password
+      formDataCopy.timestamp = serverTimestamp();
+
+      await setDoc(doc(db, "users", user.uid),formDataCopy)
+      toast.success("signup up was success")
+      navigate("/");
+       
+    } catch (error) {
+      toast.error("something went wrong with the registration ")
+
+      
+      
+    }
+
   }
 
   return (
@@ -30,7 +65,7 @@ export default function SignUp() {
              <img src='https://images.unsplash.com/flagged/photo-1564767609342-620cb19b2357?q=80&w=1973&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' alt='Key' className='w-full rounded-2xl'/> 
          </div>
          <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-            <form >
+            <form  onSubmit={onSubmit}>
                <input 
                    className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6' 
                    type='text' 
