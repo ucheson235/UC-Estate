@@ -2,8 +2,12 @@ import React from 'react'
 import { useState } from 'react';
 import { IoMdEyeOff } from "react-icons/io";
 import { IoEye } from "react-icons/io5";
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import { signInWithEmailAndPassword,getAuth } from 'firebase/auth';
+import {toast} from 'react-toastify';
+
+
 
 
 export default function Login() {
@@ -13,12 +17,25 @@ export default function Login() {
     password: "",
   });
   const {email, password} = formData;
+  const navigate = useNavigate()
   function onChange(e){
     console.log(e.target.value);
     setFormData((prevState)=>({
       ...prevState,
       [e.target.id]: e.target.value,
     }))
+  }
+  async function onsubmit(e) {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (userCredential.user) {
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Bad user credentials");
+    }
   }
 
   return (
@@ -29,7 +46,7 @@ export default function Login() {
              <img src='https://images.unsplash.com/flagged/photo-1564767609342-620cb19b2357?q=80&w=1973&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' alt='Key' className='w-full rounded-2xl'/> 
          </div>
          <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-            <form >
+            <form onClick={onsubmit}>
                <input 
                    className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6' 
                    type='email' 
