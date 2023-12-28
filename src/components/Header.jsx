@@ -1,12 +1,27 @@
 
-import React from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+
 export default function Header() {
+  const [pageState, setPageState] = useState("Login");
   const location = useLocation();
   const navigate = useNavigate();
+  const auth = getAuth();
+  useEffect(() => {
+    onAuthStateChanged(auth, (user)=> {
+      if(user){
+        setPageState("profile");
+      }else {
+        setPageState("Login");
+      }
+
+    });
+  }, [auth])
   
-  function pathMathRoute(route){
+  function pathMatchRoute(route){
     if (route === location.pathname){
       return true
     }
@@ -26,11 +41,11 @@ export default function Header() {
         </div>
         <div>
             <ul className='flex space-x-10'>
-                <li className={` cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] ${pathMathRoute("/") && "text-black border-b-red-500"}`}  onClick={() =>navigate("/")}>Home</li>
+                <li className={` cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] ${pathMatchRoute("/") && "text-black border-b-red-500"}`}  onClick={() =>navigate("/")}>Home</li>
                 
-                <li className={` cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] ${pathMathRoute("/Offer") && "text-black border-b-red-500"}`}  onClick={() =>navigate("/Offer")}>Offers</li>
+                <li className={` cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] ${pathMatchRoute("/Offer") && "text-black border-b-red-500"}`}  onClick={() =>navigate("/Offer")}>Offers</li>
                 
-                <li className={` cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] ${pathMathRoute("/Login") && "text-black border-b-red-500"}`}  onClick={() =>navigate("/Login")}>Login</li>
+                <li className={` cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] ${(pathMatchRoute("/Login") || pathMatchRoute("/profile")) && "text-black border-b-red-500"}`}  onClick={() =>navigate("/profile")}>{pageState}</li>
                 
 
             </ul>
