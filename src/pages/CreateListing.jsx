@@ -141,6 +141,7 @@ export default function CreateListing() {
           imgUrls,
           geolocation,
           timestamp: serverTimestamp(),
+          userRef:auth.currentUser.uid,
         };
         delete formDataCopay.images;
         !formDataCopay.offer && delete formDataCopay.discountedPrice;
