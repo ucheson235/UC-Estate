@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect,  useState } from 'react'
 import {getAuth, updateProfile} from "firebase/auth";
 import { useNavigate } from 'react-router';
 import {toast} from 'react-toastify'
 import { db } from '../firebase';
-import { collection, doc, getDoc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
+import { collection, doc,  getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { FcHome } from "react-icons/fc";
 import { Link } from 'react-router-dom';
 import ListingItem from '../components/ListingItem';
@@ -133,8 +133,8 @@ export default function Profile() {
 
               <div>
                
-                  <h2 className='text-2xl text-center font-semibold '>My Listing</h2>
-                  <ul>
+                  <h2 className='text-2xl text-center font-semibold mb-6'>My Listing</h2>
+                  <ul className='sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:4 2xl:grid-cols-5 mt-6 mb-6'>
                      {listing.map((listing)=>(
                       <ListingItem
                       key={listing.id} 
